@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AD SOLUTION 럭키 가챠</title>
+<style>
+:root{
+  --u:min(1vw,1.7778vh);
+  --ink:#3b2a33; --sub:#8a6f7b; --line:#f1dfe4;
+  --brand:#e86a8c; --brand-dk:#c94f73;
+  --bg:#fff3f0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 20%,#ffe1ea 0,transparent 40%),
+    radial-gradient(circle at 85% 80%,#ffe9d6 0,transparent 45%),
+    var(--bg);
+  user-select:none;-webkit-user-select:none;
+}
+body.nocursor,body.nocursor *{cursor:none!important}
+
+/* ---------- 메인 화면 ---------- */
+#app{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr auto;
+  padding:calc(var(--u)*2.2) calc(var(--u)*3.6);gap:calc(var(--u)*1.2)}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:calc(var(--u)*2)}
+.brand{font-weight:800;letter-spacing:.35em;font-size:calc(var(--u)*1.3);color:var(--brand-dk);margin-bottom:calc(var(--u)*.5)}
+h1{font-size:calc(var(--u)*5.2);font-weight:900;line-height:1;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--brand)}
+.cond{background:#fff;border-radius:999px;padding:.55em 1.3em;font-size:calc(var(--u)*1.7);font-weight:800;
+  box-shadow:0 calc(var(--u)*.4) calc(var(--u)*1.4) rgba(201,79,115,.15);white-space:nowrap}
+.cond b{color:var(--brand)}
+
+main{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:calc(var(--u)*3);min-height:0}
+.machine-wrap{height:100%;min-height:0;display:flex;align-items:center;justify-content:center}
+#machine{height:100%;max-height:calc(var(--u)*46);width:auto;overflow:visible;animation:float 3.2s ease-in-out infinite}
+#machine.spinning{animation:wobble .14s linear infinite}
+#machine .cap{transform-box:fill-box;transform-origin:center}
+#machine.spinning .cap{animation:jumble var(--dur,.32s) ease-in-out var(--del,0s) infinite alternate}
+#machine .handle{transform-box:view-box;transform-origin:200px 432px}
+#machine.spinning .handle{animation:crank 1.7s cubic-bezier(.45,0,.3,1)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--u)*-.8))}}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.2deg)}75%{transform:rotate(1.2deg)}}
+@keyframes jumble{0%{transform:translate(0,0) rotate(0)}30%{transform:translate(6px,-22px) rotate(50deg)}
+  60%{transform:translate(-9px,-8px) rotate(-35deg)}100%{transform:translate(4px,-26px) rotate(25deg)}}
+@keyframes crank{to{transform:rotate(720deg)}}
+
+.board{background:rgba(255,255,255,.72);border-radius:calc(var(--u)*2.2);padding:calc(var(--u)*1.8) calc(var(--u)*2);
+  box-shadow:0 calc(var(--u)*.6) calc(var(--u)*2.4) rgba(201,79,115,.12)}
+.board h2{font-size:calc(var(--u)*1.9);font-weight:900;margin:0 0 calc(var(--u)*1.1) calc(var(--u)*.4)}
+.row{position:relative;display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;gap:calc(var(--u)*1.2);
+  padding:calc(var(--u)*.7) calc(var(--u)*1.3);border-radius:calc(var(--u)*1.3);background:#fff;margin-bottom:calc(var(--u)*.65);
+  border:calc(var(--u)*.18) solid transparent}
+.row:last-child{margin-bottom:0}
+.row.r1{border-color:var(--c);background:linear-gradient(100deg,#fff 0,#fff8df 50%,#fff 100%);background-size:200% 100%;animation:shine 3s linear infinite}
+@keyframes shine{to{background-position:-200% 0}}
+.rk{background:var(--c);color:#fff;font-weight:900;font-size:calc(var(--u)*1.35);border-radius:999px;padding:.3em .8em;min-width:3.6em;text-align:center}
+.row .ico{width:calc(var(--u)*3.8);height:calc(var(--u)*3.8)}
+.pname{font-size:calc(var(--u)*1.9);font-weight:800;line-height:1.2}
+.psub{font-size:calc(var(--u)*1.2);color:var(--sub);font-weight:600}
+.pr{text-align:right}
+.pct{font-size:calc(var(--u)*2.3);font-weight:900;color:var(--c);line-height:1.1}
+.left{font-size:calc(var(--u)*1.1);color:var(--sub);font-weight:600}
+.row.out{filter:grayscale(1);opacity:.5}
+.row.out::after{content:"소진";position:absolute;right:calc(var(--u)*7);top:50%;transform:translateY(-50%) rotate(-8deg);
+  border:calc(var(--u)*.2) solid #c33;color:#c33;font-weight:900;font-size:calc(var(--u)*1.5);padding:.1em .5em;border-radius:.3em;background:#fff}
+
+footer{display:flex;justify-content:center}
+.cta{background:var(--brand);color:#fff;font-size:calc(var(--u)*2.5);font-weight:900;padding:.55em 1.8em;border-radius:999px;
+  box-shadow:0 calc(var(--u)*.5) 0 var(--brand-dk),0 calc(var(--u)*1) calc(var(--u)*2.4) rgba(232,106,140,.45);animation:pulse 1.6s ease-in-out infinite}
+.cta.busy{animation:none;background:#b9a2ab;box-shadow:0 calc(var(--u)*.5) 0 #9c8790}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* ---------- 결과 연출 ---------- */
+#reveal{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 45%,rgba(70,35,50,.55),rgba(25,12,18,.88))}
+#reveal.on{display:flex}
+.rays{position:absolute;left:50%;top:45%;width:170vmax;height:170vmax;transform:translate(-50%,-50%) scale(.2);opacity:0;
+  -webkit-mask-image:radial-gradient(circle,#000 0,transparent 55%);mask-image:radial-gradient(circle,#000 0,transparent 55%);
+  transition:opacity .5s,transform .7s cubic-bezier(.2,1.2,.4,1)}
+#reveal.opened .rays{opacity:.5;transform:translate(-50%,-50%) scale(1)}
+#reveal.opened .rays::before{content:"";position:absolute;inset:0;animation:spin 14s linear infinite;
+  background:repeating-conic-gradient(var(--rc) 0deg 7deg,transparent 7deg 18deg)}
+@keyframes spin{to{transform:rotate(360deg)}}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#flash.go{animation:flash .6s ease-out}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+
+.capsule{position:absolute;width:calc(var(--u)*22);height:calc(var(--u)*22);--cc:#e7e1e6;
+  filter:drop-shadow(0 0 calc(var(--u)*var(--glow,0)) var(--cc)) drop-shadow(0 calc(var(--u)*1.4) calc(var(--u)*1.4) rgba(0,0,0,.35))}
+.capsule .top,.capsule .bot{position:absolute;left:0;width:100%;height:50%;transition:transform .55s cubic-bezier(.3,1.3,.5,1),opacity .55s}
+.capsule .top{top:0;border-radius:50% 50% 0 0/100% 100% 0 0;transition-property:transform,opacity,background-color;
+  background:radial-gradient(circle at 32% 38%,rgba(255,255,255,.75) 0,rgba(255,255,255,0) 32%),var(--cc)}
+.capsule .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9%;background:rgba(0,0,0,.14)}
+.capsule .bot{bottom:0;border-radius:0 0 50% 50%/0 0 100% 100%;
+  background:radial-gradient(circle at 35% 10%,#fff 0,#f1ecef 60%,#d9d0d6 100%)}
+.capsule.drop{animation:drop .75s cubic-bezier(.3,0,.4,1)}
+@keyframes drop{0%{transform:translateY(-70vh) scale(.35) rotate(-200deg)}65%{transform:translateY(0) scale(1.05) rotate(10deg)}
+  80%{transform:translateY(-4vh) scale(.98) rotate(-4deg)}100%{transform:translateY(0) scale(1) rotate(0)}}
+.capsule.shake{animation:shake .38s ease-in-out}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-14deg) scale(1.03)}50%{transform:rotate(12deg) scale(1.06)}80%{transform:rotate(-6deg)}}
+.capsule.open .top{transform:translate(-30%,-140%) rotate(-38deg);opacity:0}
+.capsule.open .bot{transform:translate(25%,130%) rotate(24deg);opacity:0}
+
+.card{position:relative;background:#fff;border-radius:calc(var(--u)*3);padding:calc(var(--u)*2.6) calc(var(--u)*5) calc(var(--u)*2.2);
+  text-align:center;min-width:calc(var(--u)*48);opacity:0;transform:scale(.3);
+  box-shadow:0 0 0 calc(var(--u)*.7) var(--rc),0 calc(var(--u)*2) calc(var(--u)*6) rgba(0,0,0,.4)}
+.card.in{animation:pop .75s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes pop{to{opacity:1;transform:scale(1)}}
+.jackpot{display:none;font-size:calc(var(--u)*5.4);font-weight:900;letter-spacing:.04em;line-height:1;margin-bottom:calc(var(--u)*.6);
+  background:linear-gradient(90deg,#e6a100,#ffe27a,#e6a100,#ffd54a);background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 1.4s linear infinite}
+.card.r1 .jackpot{display:block}
+.ranktag{display:inline-block;background:var(--rc);color:#fff;font-weight:900;font-size:calc(var(--u)*2.2);padding:.25em 1.1em;border-radius:999px}
+.card .ico{display:block;width:calc(var(--u)*13);height:calc(var(--u)*13);margin:calc(var(--u)*1.2) auto calc(var(--u)*.6);
+  animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(calc(var(--u)*-.8)) rotate(3deg)}}
+.card .name{font-size:calc(var(--u)*4.4);font-weight:900;line-height:1.15}
+.card .sub{font-size:calc(var(--u)*1.8);color:var(--sub);font-weight:700;margin-top:calc(var(--u)*.4)}
+.card .msg{font-size:calc(var(--u)*2.1);font-weight:800;margin-top:calc(var(--u)*1.4);color:var(--rc)}
+.card .staff{font-size:calc(var(--u)*1.3);color:var(--sub);margin-top:calc(var(--u)*1.2);font-weight:600}
+.card .test{display:none;margin-top:calc(var(--u)*.8);font-weight:900;color:#c33;font-size:calc(var(--u)*1.4)}
+.card.is-test .test{display:block}
+
+#confetti{position:fixed;inset:0;z-index:15;pointer-events:none}
+#toast{position:fixed;left:50%;bottom:calc(var(--u)*12);transform:translate(-50%,calc(var(--u)*2));opacity:0;z-index:30;
+  background:rgba(40,25,32,.92);color:#fff;font-size:calc(var(--u)*2);font-weight:800;padding:.7em 1.6em;border-radius:999px;
+  transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#badge{position:fixed;left:calc(var(--u)*1.2);top:calc(var(--u)*1.2);z-index:12;display:none;background:#c33;color:#fff;
+  font-weight:900;font-size:calc(var(--u)*1.2);padding:.3em .8em;border-radius:.4em}
+body.testmode #badge{display:block}
+#gear{position:fixed;right:calc(var(--u)*1);bottom:calc(var(--u)*1);z-index:12;width:calc(var(--u)*3);height:calc(var(--u)*3);
+  border:0;border-radius:50%;background:transparent;color:var(--ink);opacity:.18;font-size:calc(var(--u)*1.8);cursor:pointer}
+#gear:hover{opacity:.7}
+
+/* ---------- 관리자 ---------- */
+#admin{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(30,18,24,.6);
+  user-select:text;-webkit-user-select:text}
+#admin.on{display:flex}
+.panel{background:#fff;width:min(1120px,94vw);max-height:92vh;overflow:auto;border-radius:18px;padding:26px 30px;font-size:15px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.panel h3{font-size:22px;font-weight:900;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.panel h4{font-size:16px;font-weight:800;margin:22px 0 8px}
+.panel .hint{color:var(--sub);font-size:13px;line-height:1.5}
+.panel table{width:100%;border-collapse:collapse}
+.panel th,.panel td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:middle}
+.panel th{font-size:13px;color:var(--sub);font-weight:700}
+.panel input[type=text],.panel input[type=number]{width:100%;font:inherit;padding:6px 8px;border:1px solid #e3d3d9;border-radius:8px}
+.panel input[type=number]{max-width:96px}
+.panel .num{text-align:right;font-variant-numeric:tabular-nums}
+.panel .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:6px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{font:inherit;font-weight:700;border:1px solid #e3d3d9;background:#fff;border-radius:10px;padding:9px 14px;cursor:pointer}
+.btn:hover{background:#fff4f7}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.danger{color:#c33;border-color:#f0c2c2}
+.toggles{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px 18px}
+.toggles label{display:flex;gap:8px;align-items:center;font-weight:600}
+.toggles .wide{grid-column:1/-1}
+.toggles .wide input{flex:1}
+.sum-ok{color:#1a8a5a;font-weight:700}.sum-warn{color:#c77700;font-weight:700}
+.log{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.log td{font-size:13px}
+.log .cx{color:#aaa;text-decoration:line-through}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
+.keys kbd{background:#f5eef1;border:1px solid #e3d3d9;border-radius:5px;padding:1px 6px;font-family:inherit;font-weight:700}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div>
+      <div class="brand">AD SOLUTION</div>
+      <h1 id="title">럭키 <em>가챠</em></h1>
+    </div>
+    <div class="cond" id="cond"></div>
+  </header>
+
+  <main>
+    <div class="machine-wrap">
+      <svg id="machine" viewBox="0 0 400 580" aria-hidden="true">
+        <ellipse cx="200" cy="566" rx="150" ry="12" fill="#000" opacity=".07"/>
+        <!-- 유리 돔 -->
+        <circle cx="200" cy="190" r="168" fill="#fff" opacity=".55"/>
+        <g id="caps"></g>
+        <circle cx="200" cy="190" r="168" fill="none" stroke="#fff" stroke-width="10"/>
+        <path d="M95 95 A140 140 0 0 1 190 48" stroke="#fff" stroke-width="14" stroke-linecap="round" fill="none" opacity=".85"/>
+        <circle cx="200" cy="18" r="16" fill="#c94f73"/>
+        <!-- 몸통 -->
+        <rect x="140" y="344" width="120" height="30" rx="8" fill="#c94f73"/>
+        <rect x="56" y="366" width="288" height="190" rx="30" fill="#e86a8c"/>
+        <rect x="56" y="366" width="288" height="26" rx="13" fill="#fff" opacity=".18"/>
+        <text x="200" y="412" text-anchor="middle" font-size="24" font-weight="900" fill="#fff" letter-spacing="4">LUCKY GACHA</text>
+        <circle cx="200" cy="470" r="46" fill="#fff"/>
+        <g class="handle">
+          <rect x="187" y="428" width="26" height="84" rx="13" fill="#c94f73"/>
+          <circle cx="200" cy="470" r="11" fill="#fff"/>
+        </g>
+        <rect x="282" y="456" width="44" height="64" rx="12" fill="#3b2a33"/>
+        <rect x="288" y="462" width="32" height="10" rx="5" fill="#fff" opacity=".2"/>
+        <rect x="76" y="456" width="40" height="40" rx="10" fill="#fff" opacity=".9"/>
+        <text x="96" y="484" text-anchor="middle" font-size="22" font-weight="900" fill="#e86a8c">₩</text>
+      </svg>
+    </div>
+
+    <section class="board">
+      <h2>🎁 이번 가챠 경품</h2>
+      <div id="rows"></div>
+    </section>
+  </main>
+
+  <footer><div class="cta" id="cta"></div></footer>
+</div>
+
+<div id="reveal">
+  <div class="rays"></div>
+  <div class="capsule" id="cap"><div class="top"></div><div class="bot"></div></div>
+  <div class="card" id="card">
+    <div class="jackpot">JACKPOT!</div>
+    <div class="ranktag" id="cRank"></div>
+    <div class="ico" id="cIco"></div>
+    <div class="name" id="cName"></div>
+    <div class="sub" id="cSub"></div>
+    <div class="msg" id="cMsg"></div>
+    <div class="staff">직원에게 이 화면을 보여주세요</div>
+    <div class="test">테스트 모드 · 기록되지 않음</div>
+  </div>
+  <div id="flash"></div>
+</div>
+
+<canvas id="confetti"></canvas>
+<div id="toast"></div>
+<div id="badge">TEST</div>
+<button id="gear" title="관리자 (A)">⚙</button>
+
+<div id="admin">
+  <div class="panel" id="panel"></div>
+</div>
+
+<script>
+'use strict';
+
+/* ================= 설정 / 저장 ================= */
+const STORE_KEY = 'adsol-gacha-v1';
+
+const DEFAULT_PRIZES = [
+  { id:'balm',    rank:1, name:'베리어 리페어 밤', sub:'본품',          weight:4,  stock:50,   color:'#f0a800', msg:'🎉 본품 당첨! 최고의 행운이에요!' },
+  { id:'ampoule', rank:2, name:'루트캄 앰플',      sub:'두피 앰플',     weight:6,  stock:80,   color:'#8b5cf6', msg:'✨ 대박! 루트캄 앰플 당첨!' },
+  { id:'mask',    rank:3, name:'마스크팩',         sub:'1매',           weight:10, stock:100,  color:'#2fa8e0', msg:'💧 촉촉한 마스크팩 당첨!' },
+  { id:'sample',  rank:4, name:'샘플 세트',        sub:'세럼 + 밤 샘플', weight:30, stock:200,  color:'#22b884', msg:'🌿 샘플 세트 당첨!' },
+  { id:'candy',   rank:5, name:'사탕',             sub:'달콤한 선물',    weight:50, stock:1000, color:'#f0609e', msg:'🍬 달콤한 사탕 당첨!' },
+];
+const DEFAULT_SETTINGS = {
+  condition: '3만원 이상 구매 시 1회 참여',
+  showStock: true,
+  creditMode: false,
+  testMode: false,
+  sound: true,
+  autoReturnSec: 25,
+};
+
+function freshState(){
+  return {
+    prizes: DEFAULT_PRIZES.map(p => ({ ...p, remaining: p.stock })),
+    settings: { ...DEFAULT_SETTINGS },
+    log: [],
+    credits: 0,
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      const s = JSON.parse(raw);
+      const base = freshState();
+      return {
+        prizes: Array.isArray(s.prizes) && s.prizes.length ? s.prizes : base.prizes,
+        settings: { ...base.settings, ...(s.settings || {}) },
+        log: Array.isArray(s.log) ? s.log : [],
+        credits: Number(s.credits) || 0,
+      };
+    }
+  }catch(e){}
+  return freshState();
+}
+let state = loadState();
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch(e){ toast('⚠ 저장 실패 — 기록을 CSV로 백업해 주세요'); }
+}
+
+/* ================= 유틸 ================= */
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function rand(){
+  try{ const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; }
+  catch(e){ return Math.random(); }
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function fmtTime(t){ const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+function dayKey(t){ const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+let toastTimer;
+function toast(msg, ms = 2200){
+  const el = $('#toast'); el.textContent = msg; el.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), ms);
+}
+
+/* ================= 아이콘 ================= */
+function icon(id, c){
+  const svg = body => `<svg viewBox="0 0 120 120" class="ico" aria-hidden="true">${body}</svg>`;
+  switch(id){
+    case 'balm': return svg(`
+      <ellipse cx="60" cy="106" rx="40" ry="6" fill="#000" opacity=".08"/>
+      <rect x="20" y="46" width="80" height="56" rx="14" fill="#fff" stroke="${c}" stroke-width="5"/>
+      <rect x="16" y="26" width="88" height="26" rx="9" fill="${c}"/>
+      <rect x="24" y="31" width="34" height="6" rx="3" fill="#fff" opacity=".5"/>
+      <rect x="34" y="62" width="52" height="24" rx="6" fill="${c}" opacity=".18"/>
+      <rect x="41" y="68" width="38" height="5" rx="2.5" fill="${c}"/>
+      <rect x="47" y="77" width="26" height="4" rx="2" fill="${c}" opacity=".6"/>`);
+    case 'ampoule': return svg(`
+      <ellipse cx="60" cy="112" rx="30" ry="5" fill="#000" opacity=".08"/>
+      <rect x="44" y="4" width="32" height="26" rx="13" fill="#4a3a42"/>
+      <rect x="38" y="28" width="44" height="14" rx="4" fill="${c}"/>
+      <path d="M34 42h52a8 8 0 0 1 8 8v50a10 10 0 0 1-10 10H36a10 10 0 0 1-10-10V50a8 8 0 0 1 8-8z" fill="${c}" opacity=".85"/>
+      <rect x="38" y="62" width="44" height="30" rx="5" fill="#fff" opacity=".92"/>
+      <rect x="45" y="70" width="30" height="5" rx="2.5" fill="${c}"/>
+      <rect x="50" y="79" width="20" height="4" rx="2" fill="${c}" opacity=".6"/>
+      <rect x="32" y="48" width="7" height="54" rx="3.5" fill="#fff" opacity=".35"/>`);
+    case 'mask': return svg(`
+      <path d="M60 8C90 8 104 32 104 58c0 32-20 54-44 54S16 90 16 58C16 32 30 8 60 8z" fill="#fff" stroke="${c}" stroke-width="5"/>
+      <ellipse cx="42" cy="52" rx="10" ry="6" fill="${c}" opacity=".4"/>
+      <ellipse cx="78" cy="52" rx="10" ry="6" fill="${c}" opacity=".4"/>
+      <circle cx="34" cy="74" r="7" fill="${c}" opacity=".2"/>
+      <circle cx="86" cy="74" r="7" fill="${c}" opacity=".2"/>
+      <path d="M46 86q14 10 28 0" stroke="${c}" stroke-width="5" fill="none" stroke-linecap="round"/>`);
+    case 'sample': return svg(`
+      <ellipse cx="60" cy="110" rx="40" ry="5" fill="#000" opacity=".08"/>
+      <g transform="rotate(-12 44 62)">
+        <rect x="20" y="24" width="48" height="74" rx="7" fill="${c}"/>
+        <rect x="20" y="24" width="48" height="11" rx="4" fill="#fff" opacity=".45"/>
+        <circle cx="44" cy="64" r="12" fill="#fff" opacity=".9"/>
+      </g>
+      <g transform="rotate(10 80 66)">
+        <rect x="56" y="30" width="46" height="74" rx="7" fill="#fff" stroke="${c}" stroke-width="5"/>
+        <rect x="56" y="30" width="46" height="11" rx="4" fill="${c}" opacity=".3"/>
+        <circle cx="79" cy="70" r="11" fill="${c}" opacity=".5"/>
+      </g>`);
+    default: return svg(`
+      <path d="M32 60L8 38l5 22-5 22z" fill="${c}" opacity=".75"/>
+      <path d="M88 60l24-22-5 22 5 22z" fill="${c}" opacity=".75"/>
+      <circle cx="60" cy="60" r="32" fill="${c}"/>
+      <circle cx="60" cy="60" r="21" fill="#fff" opacity=".38"/>
+      <circle cx="60" cy="60" r="10" fill="${c}"/>
+      <circle cx="47" cy="45" r="6" fill="#fff" opacity=".7"/>`);
+  }
+}
+
+/* ================= 화면 렌더 ================= */
+function sortedPrizes(){ return [...state.prizes].sort((a,b) => a.rank - b.rank); }
+function totalWeight(list){ return list.reduce((s,p) => s + Math.max(0, Number(p.weight) || 0), 0); }
+
+function renderBoard(){
+  const list = sortedPrizes();
+  const tw = totalWeight(list) || 1;
+  $('#rows').innerHTML = list.map(p => {
+    const pct = (Math.max(0, p.weight) / tw * 100);
+    const pctTxt = pct >= 10 || pct === 0 ? Math.round(pct) : pct.toFixed(1).replace(/\.0$/,'');
+    const out = p.remaining <= 0;
+    return `<div class="row r${p.rank}${out ? ' out' : ''}" style="--c:${p.color}">
+      <div class="rk">${p.rank}등</div>
+      ${icon(p.id, p.color)}
+      <div><div class="pname">${esc(p.name)}</div><div class="psub">${esc(p.sub)}</div></div>
+      <div class="pr"><div class="pct">${pctTxt}%</div>${state.settings.showStock ? `<div class="left">남은 ${Math.max(0,p.remaining).toLocaleString()}개</div>` : ''}</div>
+    </div>`;
+  }).join('');
+  $('#cond').innerHTML = esc(state.settings.condition).replace(/(\d+\s*만\s*원)/, '<b>$1</b>');
+  document.body.classList.toggle('testmode', !!state.settings.testMode);
+  renderCta();
+}
+function renderCta(){
+  const el = $('#cta');
+  if(phase === 'spin'){ el.textContent = '두근두근… 무엇이 나올까요?'; el.classList.add('busy'); return; }
+  el.classList.remove('busy');
+  let t = '버튼을 눌러 가챠를 돌려주세요!';
+  if(state.settings.creditMode) t = state.credits > 0 ? `참여권 ${state.credits}회 · 버튼을 눌러주세요!` : '직원에게 참여권을 받아주세요';
+  el.textContent = t;
+}
+
+const CAP_POS = [[120,300],[175,318],[232,314],[287,298],[92,250],[148,262],[205,270],[260,258],[312,244],
+  [122,204],[178,214],[236,210],[292,198],[150,160],[212,166],[268,150]];
+function renderCaps(){
+  const colors = sortedPrizes().map(p => p.color);
+  $('#caps').innerHTML = CAP_POS.map(([x,y], i) => {
+    const c = colors[i % colors.length];
+    const r = Math.round(rand() * 360);
+    const dur = (0.22 + rand() * 0.2).toFixed(2), del = (rand() * -0.4).toFixed(2);
+    return `<g transform="translate(${x} ${y}) rotate(${r})"><g class="cap" style="--dur:${dur}s;--del:${del}s">
+      <path d="M-27 0A27 27 0 0 1 27 0Z" fill="${c}"/><path d="M-27 0A27 27 0 0 0 27 0Z" fill="#fff"/>
+      <circle r="27" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="2"/>
+      <circle cx="-9" cy="-12" r="5" fill="#fff" opacity=".6"/></g></g>`;
+  }).join('');
+}
+
+/* ================= 사운드 (파일 없이 합성) ================= */
+const Sound = {
+  ctx: null,
+  init(){
+    if(!this.ctx){ try{ this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return; } }
+    if(this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  tone(freq, dur, type = 'sine', vol = .2, when = 0, slide = 0){
+    if(!state.settings.sound || !this.ctx) return;
+    const t = this.ctx.currentTime + when;
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(t); o.stop(t + dur + 0.05);
+  },
+  tick(){ this.tone(1500 + rand() * 300, .035, 'square', .05); },
+  drop(){ this.tone(320, .35, 'sine', .35, 0, -260); this.tone(180, .2, 'triangle', .25, .45, -80); },
+  shake(i){ this.tone(500 + i * 90, .09, 'triangle', .18); },
+  fanfare(rank){
+    const seq = {
+      5: [[784,.12],[1047,.25]],
+      4: [[523,.1],[659,.1],[784,.3]],
+      3: [[523,.09],[659,.09],[784,.09],[1047,.35]],
+      2: [[523,.08],[659,.08],[784,.08],[1047,.08],[1319,.45]],
+      1: [[523,.08],[659,.08],[784,.08],[1047,.08],[784,.08],[1047,.08],[1319,.08],[1568,.7]],
+    }[rank] || [[784,.2]];
+    let t = 0;
+    for(const [f, d] of seq){ this.tone(f, d + .15, rank <= 2 ? 'triangle' : 'sine', .22, t); t += d * 0.9; }
+    if(rank === 1){ [1047,1319,1568].forEach(f => this.tone(f, 1.2, 'triangle', .12, t)); }
+  },
+};
+
+/* ================= 컨페티 ================= */
+const Confetti = (() => {
+  const cv = $('#confetti'), cx = cv.getContext('2d');
+  let parts = [], running = false, W = 0, H = 0;
+  function resize(){
+    const dpr = window.devicePixelRatio || 1;
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  addEventListener('resize', resize); resize();
+  function add(p){ parts.push(p); if(!running){ running = true; requestAnimationFrame(loop); } }
+  function burst(n, colors){
+    for(let i = 0; i < n; i++){
+      const a = -Math.PI/2 + (rand() - .5) * Math.PI * 1.1, sp = (0.012 + rand() * 0.022) * H;
+      add({ x: W/2, y: H*.45, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: H*.0007, s: 6 + rand()*9,
+        r: rand()*6, vr: (rand()-.5)*.4, c: colors[i % colors.length], drag: .985 });
+    }
+  }
+  function rain(n, colors){
+    for(let i = 0; i < n; i++){
+      add({ x: rand()*W, y: -20 - rand()*H*.6, vx: (rand()-.5)*2, vy: 2 + rand()*3, g: .04, s: 6 + rand()*8,
+        r: rand()*6, vr: (rand()-.5)*.3, c: colors[i % colors.length], drag: .995 });
+    }
+  }
+  function loop(){
+    cx.clearRect(0, 0, W, H);
+    for(const p of parts){
+      p.vx *= p.drag; p.vy = p.vy * p.drag + p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
+      cx.fillRect(-p.s/2, -p.s/4, p.s, p.s/2 * (0.4 + Math.abs(Math.sin(p.r*2)))); cx.restore();
+    }
+    parts = parts.filter(p => p.y < H + 40);
+    if(parts.length) requestAnimationFrame(loop); else { running = false; cx.clearRect(0, 0, W, H); }
+  }
+  return { burst, rain, clear(){ parts = []; } };
+})();
+
+/* ================= 추첨 ================= */
+let phase = 'idle';           // idle | spin | result
+let resultAt = 0, lastTrigger = 0, autoTimer = null;
+
+function pickPrize(){
+  const avail = sortedPrizes().filter(p => p.remaining > 0 && p.weight > 0);
+  if(!avail.length) return null;
+  let r = rand() * totalWeight(avail);
+  for(const p of avail){ if(r < p.weight) return p; r -= p.weight; }
+  return avail[avail.length - 1];
+}
+
+function record(p){
+  const test = !!state.settings.testMode;
+  if(!test) p.remaining -= 1;
+  state.log.push({ n: state.log.length + 1, t: Date.now(), id: p.id, rank: p.rank, name: p.name, test, cancelled: false });
+  save();
+}
+
+async function runDraw(){
+  if(state.settings.creditMode && state.credits <= 0){ toast('직원에게 참여권을 받아주세요'); return; }
+  const prize = pickPrize();
+  if(!prize){ toast('준비한 경품이 모두 소진되었어요'); return; }
+  if(state.settings.creditMode) state.credits -= 1;
+  record(prize);  // 버튼을 누른 순간 결과를 확정·저장 (연출 중 꺼져도 기록 유지)
+
+  phase = 'spin'; renderCta();
+  Sound.init();
+  const m = $('#machine');
+  m.classList.add('spinning');
+  for(let i = 0; i < 19; i++){ Sound.tick(); await sleep(90); }
+  m.classList.remove('spinning');
+
+  // 캡슐 등장
+  const rv = $('#reveal'), cap = $('#cap'), card = $('#card');
+  rv.style.setProperty('--rc', prize.color);
+  cap.className = 'capsule'; cap.style.setProperty('--cc', '#e7e1e6'); cap.style.setProperty('--glow', 0);
+  card.className = 'card';
+  rv.className = 'on';
+  void cap.offsetWidth;
+  cap.classList.add('drop'); Sound.drop();
+  await sleep(950);
+
+  // 흔들기 — 색이 바뀌다가 마지막에 등급 색으로 멈춤
+  const rare = prize.rank <= 2;
+  const shakes = rare ? 6 : 4;
+  const palette = sortedPrizes().map(p => p.color);
+  for(let i = 0; i < shakes; i++){
+    const last = i === shakes - 1;
+    cap.classList.remove('drop', 'shake'); void cap.offsetWidth; cap.classList.add('shake');
+    cap.style.setProperty('--cc', last ? prize.color : palette[Math.floor(rand() * palette.length)]);
+    cap.style.setProperty('--glow', last ? (rare ? 5 : 3) : 1 + i * .4);
+    Sound.shake(i);
+    await sleep(rare ? 360 : 420);
+  }
+  if(rare){ await sleep(450); }
+
+  // 오픈!
+  const fl = $('#flash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
+  cap.classList.remove('shake'); cap.classList.add('open');
+  rv.classList.add('opened');
+  fillCard(prize);
+  card.classList.add('in', 'r' + prize.rank);
+  card.classList.toggle('is-test', !!state.settings.testMode);
+  Sound.fanfare(prize.rank);
+  const cc = [prize.color, '#ffffff', '#ffd54a', '#f0609e', '#8b5cf6'];
+  Confetti.burst(prize.rank === 1 ? 260 : prize.rank <= 3 ? 150 : 90, cc);
+  if(prize.rank === 1){ Confetti.rain(220, cc); setTimeout(() => Confetti.rain(160, cc), 1200); }
+  else if(prize.rank === 2){ Confetti.rain(100, cc); }
+
+  phase = 'result'; resultAt = Date.now();
+  renderBoard();
+  clearTimeout(autoTimer);
+  const sec = Number(state.settings.autoReturnSec) || 0;
+  if(sec > 0) autoTimer = setTimeout(closeResult, sec * 1000);
+}
+
+function fillCard(p){
+  $('#cRank').textContent = `${p.rank}등`;
+  $('#cIco').innerHTML = icon(p.id, p.color);
+  $('#cName').textContent = p.name;
+  $('#cSub').textContent = p.sub;
+  $('#cMsg').textContent = p.msg || '축하합니다!';
+}
+
+function closeResult(){
+  clearTimeout(autoTimer);
+  $('#reveal').className = '';
+  Confetti.clear();
+  phase = 'idle';
+  renderBoard();
+}
+
+function onTrigger(){
+  const now = Date.now();
+  if(now - lastTrigger < 400) return;   // 버튼 채터링 방지
+  lastTrigger = now;
+  if(phase === 'idle') runDraw();
+  else if(phase === 'result' && now - resultAt > 1500) closeResult();
+}
+
+/* ================= 입력 ================= */
+// 무선 프레젠터(PageDown/PageUp/B/.), USB 빅버튼·풋스위치(Enter/Space), 블루투스 셔터(볼륨키/Enter) 대응
+const TRIGGER_KEYS = new Set([' ','Enter','PageDown','PageUp','ArrowRight','ArrowLeft','ArrowDown','ArrowUp',
+  'AudioVolumeUp','AudioVolumeDown','MediaPlayPause','MediaTrackNext','MediaTrackPrevious','.','Period']);
+const TRIGGER_CODES = new Set(['Space','Enter','NumpadEnter','KeyB','Period']);
+
+document.addEventListener('keydown', e => {
+  if(adminOpen){ if(e.key === 'Escape') closeAdmin(); return; }
+  if(e.repeat){ if(TRIGGER_KEYS.has(e.key) || TRIGGER_CODES.has(e.code)) e.preventDefault(); return; }
+  if(TRIGGER_KEYS.has(e.key) || TRIGGER_CODES.has(e.code)){ e.preventDefault(); onTrigger(); return; }
+  switch(e.code){
+    case 'KeyF': toggleFullscreen(); return;
+    case 'KeyM':
+      state.settings.sound = !state.settings.sound; save();
+      toast(state.settings.sound ? '🔊 소리 켜짐' : '🔇 소리 꺼짐'); return;
+    case 'KeyA': openAdmin(); return;
+    case 'Escape': if(phase === 'result') closeResult(); return;
+  }
+  if(state.settings.creditMode && /^(Digit|Numpad)[0-9]$/.test(e.code)){
+    const n = Number(e.code.slice(-1));
+    state.credits = n === 0 ? 0 : state.credits + n;
+    save(); renderCta(); toast(`참여권 ${state.credits}회`);
+  }
+});
+$('#app').addEventListener('click', () => { Sound.init(); onTrigger(); });
+$('#reveal').addEventListener('click', onTrigger);
+$('#gear').addEventListener('click', e => { e.stopPropagation(); openAdmin(); });
+
+function toggleFullscreen(){
+  if(document.fullscreenElement) document.exitFullscreen?.();
+  else document.documentElement.requestFullscreen?.().catch(() => {});
+}
+
+let cursorTimer;
+addEventListener('mousemove', () => {
+  document.body.classList.remove('nocursor');
+  clearTimeout(cursorTimer);
+  cursorTimer = setTimeout(() => { if(!adminOpen) document.body.classList.add('nocursor'); }, 3000);
+});
+
+// 화면 꺼짐 방지 (지원 브라우저만)
+let wakeLock = null;
+async function keepAwake(){ try{ wakeLock = await navigator.wakeLock?.request('screen'); }catch(e){} }
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') keepAwake(); });
+
+/* ================= 관리자 ================= */
+let adminOpen = false;
+
+function givenCount(id, onlyToday){
+  const today = dayKey(Date.now());
+  return state.log.filter(l => l.id === id && !l.test && !l.cancelled && (!onlyToday || dayKey(l.t) === today)).length;
+}
+
+function openAdmin(){
+  if(phase === 'spin') return;
+  adminOpen = true;
+  document.body.classList.remove('nocursor');
+  renderAdmin();
+  $('#admin').classList.add('on');
+}
+function closeAdmin(){
+  adminOpen = false;
+  $('#admin').classList.remove('on');
+  renderCaps(); renderBoard();
+}
+
+function renderAdmin(){
+  const list = sortedPrizes();
+  const tw = totalWeight(list);
+  const valid = state.log.filter(l => !l.test && !l.cancelled);
+  const today = dayKey(Date.now());
+  const recent = [...state.log].reverse().slice(0, 40);
+  const s = state.settings;
+  $('#panel').innerHTML = `
+    <h3>⚙ 가챠 관리자 <button class="btn" data-act="close">닫기 (Esc)</button></h3>
+    <p class="hint">여기서 바꾼 값은 이 컴퓨터 브라우저에 자동 저장돼요. 인터넷이 없어도 동작해요.</p>
+
+    <h4>경품 · 확률 · 수량</h4>
+    <table>
+      <tr><th>등수</th><th>경품명</th><th>설명</th><th class="num">확률(%)</th><th class="num">준비 수량</th><th class="num">남은 수량</th><th class="num">지급(오늘/전체)</th></tr>
+      ${list.map(p => `<tr data-id="${p.id}">
+        <td><span class="dot" style="background:${p.color}"></span><b>${p.rank}등</b></td>
+        <td><input type="text" data-f="name" value="${esc(p.name)}"></td>
+        <td><input type="text" data-f="sub" value="${esc(p.sub)}"></td>
+        <td class="num"><input type="number" data-f="weight" min="0" step="0.1" value="${p.weight}"></td>
+        <td class="num"><input type="number" data-f="stock" min="0" step="1" value="${p.stock}"></td>
+        <td class="num"><input type="number" data-f="remaining" min="0" step="1" value="${p.remaining}"></td>
+        <td class="num">${givenCount(p.id, true)} / ${givenCount(p.id)}</td>
+      </tr>`).join('')}
+    </table>
+    <p class="hint" style="margin-top:8px">
+      확률 합계: <span class="${Math.abs(tw - 100) < 0.01 ? 'sum-ok' : 'sum-warn'}">${+tw.toFixed(2)}%</span>
+      ${Math.abs(tw - 100) < 0.01 ? '' : ' → 합이 100이 아니어도 비율대로 자동 환산돼요.'}
+      · 어떤 경품이 소진되면 그 확률은 남은 경품들에 비율대로 나눠져요.
+      · 총 참여 <b>${valid.length}</b>회 (오늘 <b>${valid.filter(l => dayKey(l.t) === today).length}</b>회)
+    </p>
+    <div class="btns">
+      <button class="btn primary" data-act="save">경품 설정 저장</button>
+      <button class="btn" data-act="refill">남은 수량 = 준비 수량으로 채우기</button>
+    </div>
+
+    <h4>운영 옵션</h4>
+    <div class="toggles">
+      <label class="wide">참여 조건 문구 <input type="text" id="oCond" value="${esc(s.condition)}"></label>
+      <label><input type="checkbox" id="oStock" ${s.showStock ? 'checked' : ''}> 화면에 남은 수량 표시</label>
+      <label><input type="checkbox" id="oSound" ${s.sound ? 'checked' : ''}> 효과음 (M)</label>
+      <label><input type="checkbox" id="oTest" ${s.testMode ? 'checked' : ''}> 테스트 모드 (수량·기록 반영 안 함)</label>
+      <label><input type="checkbox" id="oCredit" ${s.creditMode ? 'checked' : ''}> 참여권 모드 (직원이 숫자키로 횟수 부여)</label>
+      <label>결과 화면 자동 닫힘 <input type="number" id="oAuto" min="0" step="1" value="${s.autoReturnSec}" style="max-width:70px">초 (0=안 닫힘)</label>
+      <label>현재 참여권 <input type="number" id="oCredits" min="0" step="1" value="${state.credits}" style="max-width:70px">회</label>
+    </div>
+    <div class="btns"><button class="btn primary" data-act="saveopt">옵션 저장</button></div>
+
+    <h4>추첨 기록</h4>
+    <div class="log"><table>
+      <tr><th>#</th><th>시간</th><th>결과</th><th>상태</th></tr>
+      ${recent.length ? recent.map(l => `<tr class="${l.cancelled ? 'cx' : ''}">
+        <td>${l.n}</td><td>${fmtTime(l.t)}</td><td>${l.rank}등 ${esc(l.name)}</td>
+        <td>${l.cancelled ? '취소됨' : l.test ? '테스트' : '지급'}</td></tr>`).join('')
+        : '<tr><td colspan="4" class="hint">아직 기록이 없어요</td></tr>'}
+    </table></div>
+    <div class="btns">
+      <button class="btn" data-act="undo">마지막 추첨 취소 (수량 되돌리기)</button>
+      <button class="btn" data-act="csv">기록 CSV 저장</button>
+      <button class="btn danger" data-act="reset">전체 초기화</button>
+    </div>
+
+    <h4>조작 키</h4>
+    <div class="keys">
+      <span><kbd>Space</kbd> <kbd>Enter</kbd> <kbd>PageDown</kbd> <kbd>→</kbd> 등</span><span>가챠 돌리기 / 결과 닫기 (화면 클릭·터치도 가능)</span>
+      <span><kbd>F</kbd></span><span>전체 화면</span>
+      <span><kbd>M</kbd></span><span>소리 켜기/끄기</span>
+      <span><kbd>A</kbd></span><span>관리자 창</span>
+      <span><kbd>1</kbd>~<kbd>9</kbd> / <kbd>0</kbd></span><span>참여권 모드에서 참여권 추가 / 0회로 초기화</span>
+      <span><kbd>Esc</kbd></span><span>결과 화면·관리자 창 닫기</span>
+    </div>
+  `;
+}
+
+$('#panel').addEventListener('click', e => {
+  const act = e.target.closest('[data-act]')?.dataset.act;
+  if(!act) return;
+  if(act === 'close') return closeAdmin();
+  if(act === 'save'){
+    for(const tr of $('#panel').querySelectorAll('tr[data-id]')){
+      const p = state.prizes.find(x => x.id === tr.dataset.id);
+      if(!p) continue;
+      const v = f => tr.querySelector(`[data-f="${f}"]`).value;
+      p.name = v('name').trim() || p.name;
+      p.sub = v('sub').trim();
+      p.weight = Math.max(0, Number(v('weight')) || 0);
+      p.stock = Math.max(0, Math.floor(Number(v('stock')) || 0));
+      p.remaining = Math.max(0, Math.floor(Number(v('remaining')) || 0));
+    }
+    save(); renderAdmin(); toast('경품 설정을 저장했어요');
+  }
+  if(act === 'refill'){
+    if(!confirm('모든 경품의 남은 수량을 준비 수량으로 되돌릴까요? (기록은 유지돼요)')) return;
+    state.prizes.forEach(p => p.remaining = p.stock); save(); renderAdmin();
+  }
+  if(act === 'saveopt'){
+    const s = state.settings;
+    s.condition = $('#oCond').value.trim() || DEFAULT_SETTINGS.condition;
+    s.showStock = $('#oStock').checked;
+    s.sound = $('#oSound').checked;
+    s.testMode = $('#oTest').checked;
+    s.creditMode = $('#oCredit').checked;
+    s.autoReturnSec = Math.max(0, Math.floor(Number($('#oAuto').value) || 0));
+    state.credits = Math.max(0, Math.floor(Number($('#oCredits').value) || 0));
+    save(); renderAdmin(); toast('옵션을 저장했어요');
+  }
+  if(act === 'undo'){
+    const last = [...state.log].reverse().find(l => !l.cancelled);
+    if(!last) return toast('취소할 기록이 없어요');
+    if(!confirm(`#${last.n} ${fmtTime(last.t)} · ${last.rank}등 ${last.name} 추첨을 취소할까요?`)) return;
+    last.cancelled = true;
+    if(!last.test){ const p = state.prizes.find(x => x.id === last.id); if(p) p.remaining += 1; }
+    save(); renderAdmin();
+  }
+  if(act === 'csv') downloadCsv();
+  if(act === 'reset'){
+    if(!confirm('수량·기록·설정을 모두 처음 상태로 되돌릴까요?\n먼저 "기록 CSV 저장"으로 백업하는 걸 권해요.')) return;
+    if(!confirm('정말 초기화할까요? 되돌릴 수 없어요.')) return;
+    state = freshState(); save(); renderAdmin();
+  }
+});
+
+function downloadCsv(){
+  const rows = [['번호','일시','등수','경품','상태']];
+  for(const l of state.log){
+    const d = new Date(l.t);
+    rows.push([l.n, `${dayKey(l.t)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
+      `${l.rank}등`, l.name, l.cancelled ? '취소' : l.test ? '테스트' : '지급']);
+  }
+  rows.push([]);
+  rows.push(['경품','준비 수량','지급','남은 수량']);
+  for(const p of sortedPrizes()) rows.push([p.name, p.stock, givenCount(p.id), p.remaining]);
+  const csv = '﻿' + rows.map(r => r.map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const n = new Date();
+  a.download = `가챠기록_${dayKey(n)}_${pad(n.getHours())}${pad(n.getMinutes())}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ================= 시작 ================= */
+renderCaps();
+renderBoard();
+keepAwake();
+</script>
+</body>
+</html>
